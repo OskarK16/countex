@@ -1,2 +1,0 @@
-# countex
-CounTEX reimplementation

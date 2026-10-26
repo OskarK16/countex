@@ -12,13 +12,16 @@ from countex.models import MODEL_NAMES, build_classifier
 from countex.utils import get_device, set_seed
 
 
-EPOCHS = 30
-BATCH_SIZE = 64
+EPOCHS = 10
+BATCH_SIZE = 32
 NUM_WORKERS = 4
 SEED = 2026
 AWA2_TEST_RATIO = 0.2
 CLIP_NORMALIZE = True   # L2-normalise CLIP image embeddings before the linear head
 NUM_CLASSES = {"awa2": 50, "cub": 200}
+RESULTS_FILE = "results/accuracies.txt"
+DISPLAY_NAMES = {"clip_linear": "CLIP+linear", "resnet18": "ResNet18", "resnet50": "ResNet50",
+                 "awa2": "AwA2", "cub": "CUB"}
 
 LINEAR_LR = 1e-3
 FINETUNE_HEAD_LR = 1e-2
@@ -129,6 +132,11 @@ def main(args):
         json.dump(history, f, indent=2)
 
     print(f"saved to {out_dir}  (final test acc {history[-1]['test_acc']:.4f})")
+
+    results_file = Path(RESULTS_FILE)
+    results_file.parent.mkdir(parents = True, exist_ok = True)
+    with open(results_file, "a") as f:
+        f.write(f"{DISPLAY_NAMES[args.model]} {DISPLAY_NAMES[args.dataset]}: {100 * history[-1]['test_acc']:.2f}%\n")
 
 
 if __name__ == "__main__":
